@@ -1,0 +1,5 @@
+# Project exclude paths
+/venv/
+/model/
+/uploads/
+../../Desktop/AI/PRUEBA_WEB/chatgpt_web/server/model.zip
