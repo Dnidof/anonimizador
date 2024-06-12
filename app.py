@@ -13,7 +13,7 @@ UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Load the Hugging Face model
-model_name = "model"
+model_name = "Dnidof/NER-MEDDOCAN"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForTokenClassification.from_pretrained(model_name)
 classifier = pipeline("token-classification", model=model_name, tokenizer=model_name, aggregation_strategy="simple")
