@@ -25,6 +25,7 @@ COPY . .
 
 # Establece la variable de entorno para que Flask escuche solo en localhost
 ENV FLASK_RUN_HOST=127.0.0.1
+ENV FLASK_RUN_PORT=4444
 
 # Exponer el puerto 4444 para Flask (opcional, solo para documentación)
 EXPOSE 4444
