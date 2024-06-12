@@ -2,8 +2,12 @@
 
 Web local para anonimizar texto basada en la tarea https://github.com/PlanTL-GOB-ES/SPACCC_MEDDOCAN
 
+![image](https://github.com/Dnidof/anonimizador/assets/88423658/be8542aa-b181-4870-bc4d-a784576e6c4b)
 
 El modelo se encuentra en https://huggingface.co/Dnidof/NER-MEDDOCAN
+
+![image](https://github.com/Dnidof/anonimizador/assets/88423658/68825ed1-0005-4f84-aa02-d8d5c98d31a9)
+
 
 ### Instrucciones
 
