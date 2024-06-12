@@ -2,7 +2,6 @@ from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
 import os
 import uuid
-import chardet
 import PyPDF2  # or `import pdfplumber` if you prefer pdfplumber for PDF parsing
 from transformers import pipeline, AutoModelForTokenClassification, AutoTokenizer
 import math
@@ -96,4 +95,4 @@ def read_pdf(file_path):
 
 
 if __name__ == '__main__':
-	app.run(port=3000)
+	app.run(port=4444)
