@@ -8,7 +8,14 @@ WORKDIR /app
 RUN pip install --upgrade pip
 
 # Instala las dependencias directamente
-RUN pip install flask flask-cors transformers PyPDF2 torch torchvision torchaudio
+# Cache con las dependencias: https://jpetazzo.github.io/2013/12/01/docker-python-pip-requirements/
+RUN pip install flask
+RUN pip install flask-cors
+RUN pip install transformers
+RUN pip install PyPDF2
+RUN pip install torch
+RUN pip install torchvision
+RUN pip install torchaudio
 
 # Copia el contenido de la carpeta actual en el sistema anfitrión al directorio de trabajo en el contenedor
 COPY . .
