@@ -23,12 +23,8 @@ RUN pip install -r requirements.txt
 # Copia el contenido de la carpeta actual en el sistema anfitrión al directorio de trabajo en el contenedor
 COPY . .
 
-# Establece la variable de entorno para que Flask escuche solo en localhost
-ENV FLASK_RUN_HOST=127.0.0.1
-ENV FLASK_RUN_PORT=4444
-
 # Exponer el puerto 4444 para Flask (opcional, solo para documentación)
 EXPOSE 4444
 
 # Comando por defecto para ejecutar la aplicación Flask
-CMD ["flask", "run"]
+CMD ["python", "app.py"]
