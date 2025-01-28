@@ -21,7 +21,7 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 # Copia el contenido de la carpeta actual en el sistema anfitrión al directorio de trabajo en el contenedor
-COPY . .
+COPY .. .
 
 # Exponer el puerto 4444 para Flask (opcional, solo para documentación)
 EXPOSE 4444
