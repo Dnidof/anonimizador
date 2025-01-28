@@ -1,10 +1,8 @@
-# Usa una imagen base de Python 3.10
+# Server Dockerfile
 FROM python:3.10
 
-# Establece el directorio de trabajo en /app/
 WORKDIR /app/
 
-# Actualiza pip
 RUN pip install --upgrade pip
 
 # Instala las dependencias directamente
@@ -20,11 +18,6 @@ RUN pip install torchvision==0.18.1
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-# Copia el contenido de la carpeta actual en el sistema anfitrión al directorio de trabajo en el contenedor
-COPY .. .
+COPY . .
 
-# Exponer el puerto 4444 para Flask (opcional, solo para documentación)
-EXPOSE 4444
-
-# Comando por defecto para ejecutar la aplicación Flask
-CMD ["python", "app.py"]
+CMD waitress-serve --call --port=$BACKEND_PORT app:create_app

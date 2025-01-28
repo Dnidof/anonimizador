@@ -1,0 +1,22 @@
+services:
+  client:
+    pull_policy: build
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    image: client:latest
+    ports:
+      - "3001:3001"
+    environment:
+      - FRONTEND_PORT=3001
+
+  server:
+    pull_policy: build
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: server:latest
+    expose:
+      - "5009"
+    environment:
+      - BACKEND_PORT=5009

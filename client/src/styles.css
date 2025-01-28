@@ -52,4 +52,9 @@ button:hover {
     padding: 10px;
     background-color: #e9ecef;
     border: 1px solid #ced4da;
+    white-space: pre-line;
+}
+
+#removeFileButton {
+    display: none;
 }

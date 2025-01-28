@@ -94,5 +94,5 @@ def read_pdf(file_path):
 		return text
 
 
-if __name__ == '__main__':
-	app.run(host='0.0.0.0', port=4444, debug=True)
+def create_app():
+    return app
