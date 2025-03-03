@@ -1,8 +1,6 @@
 # Anonimizador Web
 
-Web local para anonimizar texto basada en la tarea https://github.com/PlanTL-GOB-ES/SPACCC_MEDDOCAN
-
-![image](https://github.com/Dnidof/anonimizador/assets/88423658/be8542aa-b181-4870-bc4d-a784576e6c4b)
+Herramienta para anonimizar texto basada en la tarea https://github.com/PlanTL-GOB-ES/SPACCC_MEDDOCAN
 
 El modelo se encuentra en https://huggingface.co/Dnidof/NER-MEDDOCAN
 
@@ -21,8 +19,8 @@ Para construir y ejecutar el contenedor, sigue estos pasos:
    docker build -t anonimizador_hitz2024 .
    ```
 
-2. **Ejecutar el contenedor**:
+2. **Ejecutar el contenedor (Powershell o bash) **:
    ```sh
-   docker run -p 127.0.0.1:4444:4444 anonimizador_hitz2024
+   docker run -v ${PWD}:/app/ anonimizador_hitz2024
    ```
 

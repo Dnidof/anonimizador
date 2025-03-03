@@ -9,8 +9,6 @@ RUN pip install --upgrade pip
 
 # Instala las dependencias directamente
 # Cache con las dependencias: https://jpetazzo.github.io/2013/12/01/docker-python-pip-requirements/
-RUN pip install Flask==3.0.3
-RUN pip install Flask-Cors==4.0.1
 RUN pip install transformers==4.41.2
 RUN pip install PyPDF2==3.0.1
 RUN pip install torch==2.3.1

@@ -1,17 +1,8 @@
-from flask import Flask, request, send_file, jsonify
-from flask_cors import CORS
 from io import BytesIO
-import os
-import uuid
+import glob
 import fitz
 from transformers import pipeline, AutoModelForTokenClassification, AutoTokenizer
 import math
-
-app = Flask(__name__)
-CORS(app)
-
-UPLOAD_FOLDER = 'uploads'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Load the Hugging Face model
 model_name = "Dnidof/NER-MEDDOCAN"
@@ -19,7 +10,7 @@ tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForTokenClassification.from_pretrained(model_name)
 classifier = pipeline("token-classification", model=model_name, tokenizer=model_name, aggregation_strategy="simple")
 
-def use_model(text):
+def parse_txt(text):
 	tokens = tokenizer.tokenize(text)
 	splits = math.ceil(len(tokens) / tokenizer.model_max_length) + 1
 
@@ -35,7 +26,7 @@ def use_model(text):
 
 	return processed_text
 
-def use_model_pdf(text):
+def parse_pdf(text):
 	tokens = tokenizer.tokenize(text)
 	splits = math.ceil(len(tokens) / tokenizer.model_max_length) + 1
 
@@ -76,52 +67,35 @@ def modify_pdf(file_path, ents):
 		page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE)
 	return doc.write()
 
+def anonymize_folder(input_folder = "./input/", output_folder = None, pattern = "*"):
+	if output_folder is None:
+		output_folder = input_folder
+	files = glob.glob(input_folder + pattern)
+	directory_len = len(input_folder)
+	for file_path in files:
+		try:
+			bytes = None
 
-@app.route('/submit', methods=['POST'])
-def submit():
-	if 'file' in request.files:
-		file = request.files['file']
-		file_path = os.path.join(UPLOAD_FOLDER, f"{uuid.uuid4()}_{file.filename}")
-		file.save(file_path)
-
-		# Determine file type and read content accordingly
-		if file.filename.endswith('.txt'):
-			file_content = read_text(file_path)
-			result = use_model(file_content)
-			bytes = str(result).encode('utf-8')
+			# Determine file type and parse content accordingly
+			if file_path.endswith('.pdf'):
+				file_content = read_pdf(file_path)
+				ents = parse_pdf(file_content)
+				bytes = modify_pdf(file_path, ents)
+			elif file_path.endswith('.txt'):
+				file_content = read_txt(file_path)
+				result = parse_txt(file_content)
+				bytes = str(result).encode('utf-8')
+			else:
+				print(f"{file_path} must be txt or pdf", flush=True)
+				continue
 			buffer = BytesIO()
 			buffer.write(bytes)
 			buffer.seek(0)
-			response = send_file(buffer, mimetype='application/text', download_name=f"anm_{file.filename}", as_attachment=True)
-		elif file.filename.endswith('.pdf'):
-			file_content = read_pdf(file_path)
-			ents = use_model_pdf(file_content)
-			bytes = modify_pdf(file_path, ents)
-			buffer = BytesIO()
-			buffer.write(bytes)
-			buffer.seek(0)
-			response = send_file(buffer, mimetype='application/pdf', download_name=f"anm_{file.filename}", as_attachment=True)
-		else:
-			response = "Unsupported file format.", 400
-		os.remove(file_path)
-		return response
-
-	elif 'text' in request.form:
-		input_text = request.form['text']
-
-		# Use the Hugging Face model to process the input text
-		result = use_model(input_text)
-
-		response_text = f"{result}"
-		return response_text
-
-	else:
-		return "No file or text provided.", 400
-
-
-def read_text(file_path):
-	with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
-		return f.read()
+			new_file_path = output_folder + "ANM_" + file_path[directory_len:]
+			with open(new_file_path, "wb") as f:
+				f.write(buffer.getbuffer())
+		except Exception:
+			pass
 
 def read_pdf(file_path):
 	doc = fitz.open(file_path)
@@ -130,7 +104,11 @@ def read_pdf(file_path):
 		text += page.get_text("text")
 	return text
 
+def read_txt(file_path):
+	with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+		return f.read()
+
 if __name__ == '__main__':
-	app.run(host='0.0.0.0', port=4444, debug=True)
+	anonymize_folder("./input/", "./output/")
 
 
