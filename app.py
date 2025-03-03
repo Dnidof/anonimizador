@@ -15,7 +15,6 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Load the Hugging Face model
 model_name = "Dnidof/NER-MEDDOCAN"
-print("Loading...", model_name)
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForTokenClassification.from_pretrained(model_name)
 classifier = pipeline("token-classification", model=model_name, tokenizer=model_name, aggregation_strategy="simple")
@@ -23,7 +22,6 @@ classifier = pipeline("token-classification", model=model_name, tokenizer=model_
 def use_model(text):
 	tokens = tokenizer.tokenize(text)
 	splits = math.ceil(len(tokens) / tokenizer.model_max_length) + 1
-	print(f"Hay {len(tokens)} tokens: hacemos {splits} trozos de texto")
 
 	processed_text = ""
 	size = int(len(text)/splits)
@@ -37,10 +35,9 @@ def use_model(text):
 
 	return processed_text
 
-def use_model_ents(text):
+def use_model_pdf(text):
 	tokens = tokenizer.tokenize(text)
 	splits = math.ceil(len(tokens) / tokenizer.model_max_length) + 1
-	print(f"Hay {len(tokens)} tokens: hacemos {splits} trozos de texto", flush=True)
 
 	ents = []
 	size = int(len(text)/splits)
@@ -48,15 +45,17 @@ def use_model_ents(text):
 	for split in range(splits):
 		new_text = text[split*size:(split+1)*size]
 		new_ents = classifier(new_text)
-		print("------")
-		print(new_text)
-		print(new_ents, flush=True)
+		for ent in new_ents:
+			ent["word"] = ent["word"].strip().strip('.')
+			if len(ent["word"]) == 1:
+				start = ent["start"] - 1
+				end = ent["end"] + 2
+				ent["word"] = new_text[start:end]
 		ents += new_ents
 	return ents
 
 def process_split(t):
 	ents = classifier(t)
-	print(ents, flush=True)
 	new_text = t
 	for ent in ents:
 		start = int(ent["start"])
@@ -66,8 +65,7 @@ def process_split(t):
 
 def modify_pdf(file_path, ents):
 	doc = fitz.open(file_path)
-	pii_words = {ent["word"].strip().strip('.') for ent in ents}
-	print(pii_words, flush=True)
+	pii_words = {ent["word"] for ent in ents}
 	for page in doc:
 		for pii_word in pii_words:
 			hits = page.search_for(pii_word)  # list of rectangles where to replace
@@ -97,7 +95,7 @@ def submit():
 			response = send_file(buffer, mimetype='application/text', download_name=f"anm_{file.filename}", as_attachment=True)
 		elif file.filename.endswith('.pdf'):
 			file_content = read_pdf(file_path)
-			ents = use_model_ents(file_content)
+			ents = use_model_pdf(file_content)
 			bytes = modify_pdf(file_path, ents)
 			buffer = BytesIO()
 			buffer.write(bytes)
@@ -130,7 +128,6 @@ def read_pdf(file_path):
 	text = ""
 	for page in doc:
 		text += page.get_text("text")
-	print(text, flush=True)
 	return text
 
 if __name__ == '__main__':
